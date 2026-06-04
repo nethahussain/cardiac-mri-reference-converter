@@ -117,7 +117,7 @@ publisher's copyrighted article PDF/appendix are deliberately **excluded** and l
 
 ## Credits
 
-Developed by **Caroline Berntsson** and **Netha Hussain**.
+Developed by **Netha Hussain**.
 Questions or error reports: netha.hussain@vgregion.se
 
 ## License
