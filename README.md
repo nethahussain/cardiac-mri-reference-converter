@@ -13,7 +13,7 @@ age-, sex-, and ethnicity-specific reference comparisons, using the reference ra
 published by the **Healthy Hearts Consortium** (Raisi-Estabragh et al., *JACC
 Cardiovascular Imaging*, 2024).
 
-Enter a patient's volumes and masses (or import a segmentation XML), and the tool
+Enter a patient's volumes and masses, and the tool
 computes the derived metrics, indexes them to body size, and flags every value as
 **low / normal / high** against the matching published reference range — then produces
 a clean, copy-ready report.
@@ -30,7 +30,6 @@ a clean, copy-ready report.
 - **Two body-size corrections** — body surface area (BSA, Mosteller) and height.
 - **30 parameters** — volumes (EDV, ESV, SV) and their indexed forms, ejection fraction, cardiac output, and systolic & diastolic myocardial mass for the ventricles, plus maximal/end-systolic volumes and ejection fraction for the atria.
 - **Automatic derivation** — stroke volume, ejection fraction, cardiac output, BSA/height indexing, and atrial ejection fraction are all computed for you.
-- **XML import** — drag-and-drop a CMR segmentation export to auto-fill patient data and ventricular measurements (including heart rate and myocardial mass).
 - **Visual gauges** — every parameter is shown on a gauge marking the normal band and the patient's position.
 - **Copy-ready report** — a formatted, editable text report for pasting into a radiology system.
 - **Editable reference values** — a password-protected workspace lets you adjust the stored reference ranges (saved locally in the browser).
@@ -43,21 +42,10 @@ a clean, copy-ready report.
 1. Open the tool — **online** at https://nethahussain.github.io/cardiac-mri-reference-converter/, or download **`Cardiac-MRI-Reference-Converter.html`** and open it locally (works fully offline).
 2. Enter the patient's **sex, ethnicity, date of birth, weight, height**, and (optionally) **heart rate**.
 3. Choose the **segmentation method** and **indexing** that match how your measurements were obtained.
-4. Type the **measurements** for each chamber — or drag a segmentation **XML** file onto the import zone.
+4. Type the **measurements** for each chamber (left & right atrium are optional).
 5. Read the **results & reference comparison**, and click **Copy report to clipboard**.
 
 No installation, build step, or internet connection is required.
-
-### XML import
-
-The importer reads the `Report → Patient` and `Report → SAX3DFunction → LV/RV` nodes of a
-CMR functional-analysis export, filling in sex, date of birth, weight, height, heart rate,
-LV/RV end-diastolic and end-systolic volumes, and LV myocardial mass (diastole and systole).
-Atrial volumes are not part of these exports and are entered manually.
-
-> Segmentation XML files typically contain **identifiable patient data** (e.g. personal ID
-> numbers, study dates, institution names). Keep them local — never commit them to a
-> repository. They are intentionally excluded from this project (see *Data & privacy*).
 
 ---
 

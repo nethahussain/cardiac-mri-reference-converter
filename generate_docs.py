@@ -171,7 +171,7 @@ def build_calculations():
     for step in ["Patient data is entered (sex, ethnicity, date of birth, weight, height, heart rate).",
                  "BSA is calculated with the Mosteller formula.",
                  "Segmentation method and indexing are selected.",
-                 "Measurements are entered for each chamber, or imported from XML.",
+                 "Measurements are entered for each chamber (atria optional).",
                  "SV, EF and CO are derived; atrial EF is derived from max and min volumes.",
                  "All volumes and masses are indexed by BSA or height.",
                  "Reference ranges are looked up by ethnicity, sex, age group, segmentation and indexing.",

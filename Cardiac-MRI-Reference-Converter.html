@@ -101,20 +101,6 @@ body{background:var(--ft-paper);color:var(--ft-ink);font-family:'Source Serif 4'
 .ws-actions{display:flex;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap}
 .ws-msg{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;display:none}
 .ws-custom-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.06em;padding:2px 8px;border-radius:2px;background:var(--ft-amber-dim);color:var(--ft-mandarin);text-transform:uppercase}
-/* Drop zone */
-.drop-zone{border:2.5px dashed var(--ft-teal);border-radius:4px;padding:36px 24px;text-align:center;cursor:pointer;transition:all .25s;background:rgba(13,118,128,.04);margin-top:28px}
-.drop-zone:hover,.drop-zone.drag-over{background:rgba(13,118,128,.1);border-color:var(--ft-teal-light)}
-.drop-zone-icon{font-size:36px;margin-bottom:8px;color:var(--ft-teal);line-height:1}
-.drop-zone-text{font-family:'Source Serif 4',Georgia,serif;font-size:17px;color:var(--ft-ink);font-weight:600}
-.drop-zone-hint{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ft-ink-faint);margin-top:6px;letter-spacing:.02em}
-.drop-zone-success{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ft-jade);margin-top:8px;display:none}
-/* Collapsible manual input */
-.manual-details{margin-top:24px}
-.manual-details summary{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ft-ink-light);cursor:pointer;padding:12px 0;list-style:none;display:flex;align-items:center;gap:8px;border-top:1px solid var(--ft-rule);border-bottom:1px solid var(--ft-rule);user-select:none}
-.manual-details summary::-webkit-details-marker{display:none}
-.manual-details summary::before{content:'\25B6';font-size:9px;transition:transform .2s;display:inline-block}
-.manual-details[open] summary::before{transform:rotate(90deg)}
-.manual-details summary:hover{color:var(--ft-ink)}
 /* Big copy button */
 .btn-copy-big{display:block;width:100%;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;letter-spacing:.08em;padding:16px 24px;border:none;border-radius:3px;cursor:pointer;transition:all .2s;background:var(--ft-pink);color:var(--ft-white);text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(153,15,61,.15)}
 .btn-copy-big:hover{background:var(--ft-pink-light);box-shadow:0 4px 16px rgba(153,15,61,.25)}
@@ -160,18 +146,7 @@ body{background:var(--ft-paper);color:var(--ft-ink);font-family:'Source Serif 4'
 </div>
 </div>
 
-<div class="drop-zone animate-in" id="dropZone" onclick="el('xmlFile').click()">
-<div class="drop-zone-icon">&#128196;</div>
-<div class="drop-zone-text">Import XML</div>
-<div class="drop-zone-hint">Drag &amp; drop an XML file here, or click to choose a file</div>
-<div class="drop-zone-success" id="dropSuccess"></div>
-<input type="file" id="xmlFile" accept=".xml" style="display:none" onchange="loadXml(this)">
-</div>
-
-<details class="manual-details" id="manualDetails" open>
-<summary>Manual input &mdash; patient data &amp; measurements</summary>
-
-<div style="height:16px"></div>
+<div style="height:8px"></div>
 <div class="section-label">Patient data</div>
 <div class="patient-grid">
 <div class="field-group"><label for="sex">Sex</label><select id="sex" onchange="recalc()"><option value="F">Female</option><option value="M">Male</option></select></div>
@@ -215,7 +190,6 @@ body{background:var(--ft-paper);color:var(--ft-ink);font-family:'Source Serif 4'
 <div class="field-group"><label for="raMin">Minimum volume</label><input type="number" id="raMin" step="0.1" placeholder="Min RA volume &#8212; for RAEF" oninput="recalc()"><div class="unit-hint">ml</div></div>
 </div></div>
 </div>
-</details>
 
 <div class="summary-row animate-in delay-1" id="summaryRow" style="display:none">
 <div class="summary-cell"><div class="s-label">Age</div><div class="s-value" id="sumAge">&#8212;</div><div class="s-unit">years</div></div>
@@ -468,32 +442,7 @@ function renderRefTable(eth,sex,seg,idx,ag){
 /* ---------- report copy / demo / reset ---------- */
 function copyReport(){navigator.clipboard.writeText(el('reportPre').innerText).then(function(){var btn=el('copyBtn');btn.textContent='✓ Copied to clipboard!';btn.classList.add('copied');setTimeout(function(){btn.textContent='Copy report to clipboard';btn.classList.remove('copied');},2000);}).catch(function(){var btn=el('copyBtn');btn.textContent='Could not copy — select manually';btn.style.background='var(--ft-crimson)';setTimeout(function(){btn.textContent='Copy report to clipboard';btn.style.background='';},3000);});}
 function loadDemo(){el('sex').value='M';el('ethnicity').value='White';el('segmentation').value='smooth';el('indexing').value='bsa';el('dob').value='1984-04-13';el('weight').value='73';el('height').value='180';el('hr').value='62';el('lvEDV').value='181.2';el('lvESV').value='87.4';el('lvMassD').value='118.5';el('lvMassS').value='112.0';el('rvEDV').value='186.3';el('rvESV').value='87.3';el('laESV').value='78';el('laMax').value='82';el('laMin').value='30';el('raESV').value='80';el('raMax').value='84';el('raMin').value='38';recalc();}
-function resetMeasurements(){['lvEDV','lvESV','lvMassD','lvMassS','rvEDV','rvESV','laESV','laMax','laMin','raESV','raMax','raMin','dob','weight','height','hr'].forEach(function(id){el(id).value='';});el('sex').value='F';el('ethnicity').value='White';el('segmentation').value='smooth';el('indexing').value='bsa';el('dob').style.borderColor='';el('dob').style.color='var(--ft-ink)';el('dropSuccess').style.display='none';el('manualDetails').setAttribute('open','');recalc();}
-
-/* ---------- XML import ---------- */
-function loadXml(input){if(!input.files||!input.files[0])return;processXmlFile(input.files[0]);input.value='';}
-function processXmlFile(file){var reader=new FileReader();reader.onload=function(e){
-  var parser=new DOMParser(),doc=parser.parseFromString(e.target.result,'text/xml');
-  if(doc.querySelector('parsererror')){var ds=el('dropSuccess');ds.textContent='✘ Could not parse the XML file';ds.style.color='var(--ft-crimson)';ds.style.display='';return;}
-  ['lvEDV','lvESV','lvMassD','lvMassS','rvEDV','rvESV','laESV','laMax','laMin','raESV','raMax','raMin','weight','height','hr','dob'].forEach(function(id){el(id).value='';});
-  el('dob').style.borderColor='';el('dob').style.color='var(--ft-ink)';
-  var attr=function(path){var n=doc.querySelector(path);return n?n.getAttribute('val'):''};
-  var sex=attr('Report>Patient>Sex');if(sex)el('sex').value=sex;
-  var dob=attr('Report>Patient>BirthDate');if(dob){el('dob').value=dob;handleDobBlur(el('dob'));}
-  var w=attr('Report>Patient>Weight');if(w&&parseFloat(w)>0)el('weight').value=w;
-  var h=attr('Report>Patient>Height');if(h&&parseFloat(h)>0)el('height').value=h;
-  var child=function(parent,tag){var n=parent.querySelector(tag);return n?n.getAttribute('val'):''};
-  var lv=doc.querySelector('Report>SAX3DFunction>LV');
-  if(lv){var x;x=child(lv,'EDV');if(x)el('lvEDV').value=x;x=child(lv,'ESV');if(x)el('lvESV').value=x;x=child(lv,'MyoMass_diast');if(x)el('lvMassD').value=x;x=child(lv,'MyoMass_syst');if(x)el('lvMassS').value=x;x=child(lv,'HR');if(x&&parseFloat(x)>0)el('hr').value=Math.round(parseFloat(x));}
-  var rv=doc.querySelector('Report>SAX3DFunction>RV');
-  if(rv){var x;x=child(rv,'EDV');if(x)el('rvEDV').value=x;x=child(rv,'ESV');if(x)el('rvESV').value=x;if(!el('hr').value){x=child(rv,'HR');if(x&&parseFloat(x)>0)el('hr').value=Math.round(parseFloat(x));}}
-  var missing=[];if(!w||parseFloat(w)<=0)missing.push('weight');if(!h||parseFloat(h)<=0)missing.push('height');if(!lv&&!rv)missing.push('measurements (LV/RV)');
-  var ds=el('dropSuccess');
-  if(missing.length>0){ds.innerHTML='✓ '+file.name+' imported — <span style="color:var(--ft-mandarin)">missing in XML: '+missing.join(', ')+' (enter manually)</span>';}
-  else{ds.innerHTML='✓ '+file.name+' imported <span style="color:var(--ft-ink-faint)">(atria not in XML — enter manually if needed)</span>';}
-  ds.style.color='';ds.style.display='';recalc();
-};reader.readAsText(file);}
-(function(){var dz=el('dropZone');dz.addEventListener('dragover',function(e){e.preventDefault();e.stopPropagation();dz.classList.add('drag-over');});dz.addEventListener('dragleave',function(){dz.classList.remove('drag-over');});dz.addEventListener('drop',function(e){e.preventDefault();e.stopPropagation();dz.classList.remove('drag-over');var f=e.dataTransfer.files;if(f&&f[0])processXmlFile(f[0]);});})();
+function resetMeasurements(){['lvEDV','lvESV','lvMassD','lvMassS','rvEDV','rvESV','laESV','laMax','laMin','raESV','raMax','raMin','dob','weight','height','hr'].forEach(function(id){el(id).value='';});el('sex').value='F';el('ethnicity').value='White';el('segmentation').value='smooth';el('indexing').value='bsa';el('dob').style.borderColor='';el('dob').style.color='var(--ft-ink)';recalc();}
 
 /* ---------- workspace (login-protected reference editing) ---------- */
 var wsLoggedIn=false,wsEth="White",wsSex="F",wsSeg="smooth",wsIdx="bsa",wsCh="LV";
