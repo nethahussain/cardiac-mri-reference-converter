@@ -7,6 +7,30 @@ import json, os
 from docx import Document
 from docx.shared import Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+
+LIVE_URL = "https://nethahussain.github.io/cardiac-mri-reference-converter/"
+
+def add_hyperlink(paragraph, url, text):
+    """Add a clickable hyperlink run to a paragraph."""
+    part = paragraph.part
+    r_id = part.relate_to(url,
+        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+        is_external=True)
+    hyperlink = OxmlElement('w:hyperlink'); hyperlink.set(qn('r:id'), r_id)
+    new_run = OxmlElement('w:r'); rPr = OxmlElement('w:rPr')
+    color = OxmlElement('w:color'); color.set(qn('w:val'), '0D7680'); rPr.append(color)
+    u = OxmlElement('w:u'); u.set(qn('w:val'), 'single'); rPr.append(u)
+    new_run.append(rPr)
+    t = OxmlElement('w:t'); t.text = text; new_run.append(t)
+    hyperlink.append(new_run); paragraph._p.append(hyperlink)
+    return hyperlink
+
+def add_live_link(doc):
+    p = doc.add_paragraph()
+    r = p.add_run("Live tool (open in a browser): "); r.bold = True
+    add_hyperlink(p, LIVE_URL, LIVE_URL)
 
 os.makedirs('docs', exist_ok=True)
 data = json.load(open('cmr_reference_ranges.json'))
@@ -62,6 +86,7 @@ def unit(key, idx):
 def build_calculations():
     d = Document()
     d.add_heading("Cardiac MRI Reference Converter — Calculations", 0)
+    add_live_link(d)
     d.add_paragraph("Documentation of every calculation performed by the tool. Reference "
                     "ranges are the 95% prediction intervals from Raisi-Estabragh et al. "
                     "(2024), Healthy Hearts Consortium (JACC Cardiovasc Imaging; "
@@ -161,6 +186,7 @@ def build_reference_values():
     # compact default font
     st = d.styles["Normal"]; st.font.size = Pt(9)
     d.add_heading("Cardiac MRI Reference Converter — Reference Values", 0)
+    add_live_link(d)
     d.add_paragraph("Reference ranges (95% prediction intervals; each cell shows min–max) from:")
     p = d.add_paragraph(); r = p.add_run("Raisi-Estabragh Z, et al. Cardiovascular Magnetic "
         "Resonance Reference Ranges From the Healthy Hearts Consortium. JACC Cardiovasc Imaging. "

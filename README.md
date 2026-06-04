@@ -1,5 +1,13 @@
 # Cardiac MRI Reference Converter
 
+### ▶ [**Open the live tool**](https://nethahussain.github.io/cardiac-mri-reference-converter/)
+
+**Use it now in your browser — no install:** https://nethahussain.github.io/cardiac-mri-reference-converter/
+
+(Or download `Cardiac-MRI-Reference-Converter.html` and open it locally — it works fully offline.)
+
+---
+
 A single-file, offline web tool that converts cardiac MRI (CMR) measurements into
 age-, sex-, and ethnicity-specific reference comparisons, using the reference ranges
 published by the **Healthy Hearts Consortium** (Raisi-Estabragh et al., *JACC
@@ -32,7 +40,7 @@ a clean, copy-ready report.
 
 ## Usage
 
-1. Open **`Cardiac-MRI-Reference-Converter.html`** in any modern web browser (double-click it).
+1. Open the tool — **online** at https://nethahussain.github.io/cardiac-mri-reference-converter/, or download **`Cardiac-MRI-Reference-Converter.html`** and open it locally (works fully offline).
 2. Enter the patient's **sex, ethnicity, date of birth, weight, height**, and (optionally) **heart rate**.
 3. Choose the **segmentation method** and **indexing** that match how your measurements were obtained.
 4. Type the **measurements** for each chamber — or drag a segmentation **XML** file onto the import zone.
