@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hjärt-MR Referensomvandlare</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ft-paper:#FFF1E5;--ft-paper-dark:#F2DFCE;--ft-ink:#33302E;--ft-ink-light:#66605C;--ft-ink-faint:#99918B;--ft-rule:#CCC1B7;--ft-rule-heavy:#66605C;--ft-pink:#990F3D;--ft-pink-light:#CC0044;--ft-teal:#0D7680;--ft-teal-light:#0F9AA8;--ft-white:#FFFFFF;--ft-jade:#00994D;--ft-jade-dim:#e6f5ed;--ft-crimson:#CC0000;--ft-crimson-dim:#fce8e8;--ft-amber:#FF8833;--ft-amber-dim:#fff3e8;--ft-mandarin:#FF8833}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--ft-paper);color:var(--ft-ink);font-family:'Source Serif 4',Georgia,serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.masthead{border-bottom:4px solid var(--ft-ink);padding:12px 0 10px;text-align:center}
+.masthead::after{content:'';display:block;height:1px;background:var(--ft-rule);margin-top:10px}
+.masthead-brand{font-family:'Playfair Display',Georgia,serif;font-size:11px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--ft-ink-light)}
+.masthead-title{font-family:'Playfair Display',Georgia,serif;font-size:clamp(20px,3.5vw,28px);font-weight:700;line-height:1.2;margin:6px 0 4px;color:var(--ft-ink);letter-spacing:-.01em}
+.masthead-sub{font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-size:15px;color:var(--ft-ink-light)}
+.masthead-meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ft-ink-faint);letter-spacing:.04em;margin-top:6px}
+.container{max-width:940px;margin:0 auto;padding:0 24px}
+.section-rule{border:none;border-top:1px solid var(--ft-rule);margin:32px 0 24px}
+.section-rule.heavy{border-top:3px solid var(--ft-ink);margin:36px 0 20px}
+.section-label{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--ft-pink);margin-bottom:16px;padding-bottom:8px;border-bottom:1px dotted var(--ft-rule)}
+.patient-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px}
+.field-group label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ft-ink-light);margin-bottom:6px}
+.field-group input,.field-group select{width:100%;box-sizing:border-box;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:500;color:var(--ft-ink);background:var(--ft-white);border:1px solid var(--ft-rule);border-radius:2px;outline:none;transition:border-color .2s,box-shadow .2s,color .2s}
+.field-group input:focus,.field-group select:focus{border-color:var(--ft-pink);box-shadow:0 0 0 2px rgba(153,15,61,.08)}
+.field-group .unit-hint{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ft-ink-faint);margin-top:3px}
+.summary-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0;border:1px solid var(--ft-rule);border-radius:2px;overflow:hidden;margin-top:20px;background:var(--ft-white)}
+.summary-cell{padding:14px 16px;text-align:center;border-right:1px solid var(--ft-rule)}
+.summary-cell:last-child{border-right:none}
+.summary-cell .s-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ft-ink-faint);margin-bottom:4px}
+.summary-cell .s-value{font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:900;color:var(--ft-ink);line-height:1.1}
+.summary-cell .s-unit{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ft-ink-faint);margin-top:2px}
+.measures-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--ft-rule-heavy);border-radius:2px;overflow:hidden}
+.measure-panel{padding:24px;background:var(--ft-white)}
+.measure-panel:first-child{border-right:1px solid var(--ft-rule)}
+.measure-panel h3{font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:700;margin-bottom:4px;color:var(--ft-ink)}
+.measure-panel .chamber-sub{font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-size:13px;color:var(--ft-ink-faint);margin-bottom:18px}
+.measure-fields{display:flex;flex-direction:column;gap:14px}
+.results-columns{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--ft-rule-heavy);border-radius:2px;overflow:hidden}
+.result-col{background:var(--ft-white)}.result-col:first-child{border-right:1px solid var(--ft-rule)}
+.result-col-header{padding:16px 20px 12px;border-bottom:2px solid var(--ft-ink);display:flex;justify-content:space-between;align-items:baseline}
+.result-col-header h3{font-family:'Playfair Display',Georgia,serif;font-size:17px;font-weight:700}
+.result-col-header .status-pill{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.06em;padding:3px 10px;border-radius:2px}
+.pill-ok{background:var(--ft-jade-dim);color:var(--ft-jade)}.pill-warn{background:var(--ft-crimson-dim);color:var(--ft-crimson)}
+.result-row{padding:14px 20px;border-bottom:1px solid var(--ft-rule);transition:background .15s}
+.result-row:last-child{border-bottom:none}.result-row:hover{background:var(--ft-paper)}
+.result-row.flagged{background:var(--ft-crimson-dim)}.result-row.flagged:hover{background:#f9d6d6}
+.result-row.flagged-low{background:var(--ft-amber-dim)}.result-row.flagged-low:hover{background:#ffe8cc}
+.rr-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+.rr-label{font-family:'Source Serif 4',Georgia,serif;font-size:14px;font-weight:600;color:var(--ft-ink)}
+.rr-value-group{display:flex;align-items:baseline;gap:6px}
+.rr-value{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600}
+.rr-value.normal{color:var(--ft-ink)}.rr-value.high{color:var(--ft-crimson)}.rr-value.low{color:var(--ft-mandarin)}
+.rr-unit{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ft-ink-faint)}
+.rr-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.06em;padding:1px 6px;border-radius:2px;text-transform:uppercase}
+.tag-high{background:var(--ft-crimson-dim);color:var(--ft-crimson)}.tag-low{background:var(--ft-amber-dim);color:var(--ft-mandarin)}.tag-normal{background:var(--ft-jade-dim);color:var(--ft-jade)}
+.gauge{position:relative;height:14px;margin-top:8px}
+.gauge-track{position:absolute;top:4px;left:0;right:0;height:6px;background:var(--ft-paper-dark);border-radius:3px}
+.gauge-normal{position:absolute;top:4px;height:6px;background:rgba(0,153,77,.15);border-left:1.5px solid var(--ft-jade);border-right:1.5px solid var(--ft-jade);border-radius:1px}
+.gauge-marker{position:absolute;top:0;width:14px;height:14px;border-radius:50%;border:2.5px solid var(--ft-white);transform:translateX(-50%);box-shadow:0 1px 4px rgba(0,0,0,.2);transition:left .4s cubic-bezier(.4,0,.2,1)}
+.gauge-marker.normal{background:var(--ft-jade)}.gauge-marker.high{background:var(--ft-crimson)}.gauge-marker.low{background:var(--ft-mandarin)}
+.rr-ref{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ft-ink-faint);margin-top:4px}
+.report-box{background:var(--ft-white);border:1px solid var(--ft-rule);border-radius:2px;padding:20px 24px}
+.report-pre{font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.8;color:var(--ft-ink);white-space:pre-wrap;margin:0}
+.btn-row{display:flex;gap:12px;justify-content:center;margin-top:24px}
+.btn{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.06em;padding:10px 24px;border:none;border-radius:2px;cursor:pointer;transition:all .2s}
+.btn-primary{background:var(--ft-pink);color:var(--ft-white)}.btn-primary:hover{background:var(--ft-pink-light)}.btn-primary.copied{background:var(--ft-jade)}
+.btn-ghost{background:transparent;color:var(--ft-ink-light);border:1px solid var(--ft-rule)}.btn-ghost:hover{border-color:var(--ft-ink-light);color:var(--ft-ink)}
+.btn-teal{background:var(--ft-teal);color:var(--ft-white)}.btn-teal:hover{background:var(--ft-teal-light)}
+.btn-danger{background:var(--ft-crimson);color:var(--ft-white)}.btn-danger:hover{background:#aa0000}
+.ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.ref-table{width:100%;border-collapse:collapse}
+.ref-table th{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ft-ink-faint);text-align:left;padding:6px 0;border-bottom:2px solid var(--ft-ink)}
+.ref-table th:last-child{text-align:right}
+.ref-table td{font-family:'IBM Plex Mono',monospace;font-size:13px;padding:7px 0;border-bottom:1px solid var(--ft-rule);color:var(--ft-ink)}
+.ref-table td:last-child{text-align:right;color:var(--ft-teal);font-weight:600}
+.footer{text-align:center;padding:24px 0 40px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ft-ink-faint);letter-spacing:.04em;line-height:1.8}.footer a{text-decoration:none}.footer a:hover{text-decoration:underline}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeUp .5s ease both}.delay-1{animation-delay:.05s}.delay-2{animation-delay:.1s}.delay-3{animation-delay:.15s}.delay-4{animation-delay:.2s}
+@media(max-width:680px){.patient-grid{grid-template-columns:repeat(2,1fr)}.measures-grid,.results-columns,.ref-grid{grid-template-columns:1fr}.measure-panel:first-child{border-right:none;border-bottom:1px solid var(--ft-rule)}.result-col:first-child{border-right:none;border-bottom:1px solid var(--ft-rule)}.summary-row{grid-template-columns:repeat(2,1fr)}.summary-cell{border-bottom:1px solid var(--ft-rule)}}
+/* Workspace */
+.ws-btn-wrap{position:absolute;top:14px;right:0}
+.ws-link{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;background:transparent;border:1px solid var(--ft-rule);color:var(--ft-ink-faint);border-radius:2px;cursor:pointer;transition:all .2s}
+.ws-link:hover{border-color:var(--ft-pink);color:var(--ft-pink)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(51,48,46,.55);z-index:1000;justify-content:center;align-items:center}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--ft-paper);border:1px solid var(--ft-rule-heavy);border-radius:2px;padding:32px;width:90%;max-width:360px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.modal-box h2{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:900;margin-bottom:6px}
+.modal-box p{font-size:13px;color:var(--ft-ink-light);margin-bottom:20px}
+.modal-box .field-group{margin-bottom:14px}
+.login-err{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ft-crimson);margin-bottom:10px;display:none}
+.ws-panel{display:none}.ws-panel.open{display:block}
+.ws-tabs{display:flex;gap:0;border:1px solid var(--ft-rule);border-radius:2px;overflow:hidden;flex-wrap:wrap}
+.ws-tab{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.04em;padding:8px 14px;background:var(--ft-white);border:none;border-right:1px solid var(--ft-rule);cursor:pointer;color:var(--ft-ink-light);transition:all .15s}
+.ws-tab:last-child{border-right:none}.ws-tab:hover{color:var(--ft-ink)}.ws-tab.active{background:var(--ft-pink);color:var(--ft-white)}
+.ws-table{width:100%;border-collapse:collapse;background:var(--ft-white);border:1px solid var(--ft-rule);margin-top:16px}
+.ws-table th{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ft-ink-faint);padding:10px 8px;text-align:center;border-bottom:2px solid var(--ft-ink);background:var(--ft-paper-dark)}
+.ws-table th:first-child{text-align:left}
+.ws-table td{padding:5px 4px;border-bottom:1px solid var(--ft-rule);font-family:'IBM Plex Mono',monospace;font-size:12px;text-align:center}
+.ws-table td:first-child{text-align:left;font-weight:600;padding-left:8px;white-space:nowrap}
+.ws-table input[type=number]{width:52px;padding:4px 3px;font-family:'IBM Plex Mono',monospace;font-size:12px;border:1px solid var(--ft-rule);border-radius:2px;text-align:center;outline:none}
+.ws-table input[type=number]:focus{border-color:var(--ft-pink)}
+.ws-actions{display:flex;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap}
+.ws-msg{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;display:none}
+.ws-custom-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.06em;padding:2px 8px;border-radius:2px;background:var(--ft-amber-dim);color:var(--ft-mandarin);text-transform:uppercase}
+/* Drop zone */
+.drop-zone{border:2.5px dashed var(--ft-teal);border-radius:4px;padding:36px 24px;text-align:center;cursor:pointer;transition:all .25s;background:rgba(13,118,128,.04);margin-top:28px}
+.drop-zone:hover,.drop-zone.drag-over{background:rgba(13,118,128,.1);border-color:var(--ft-teal-light)}
+.drop-zone-icon{font-size:36px;margin-bottom:8px;color:var(--ft-teal);line-height:1}
+.drop-zone-text{font-family:'Source Serif 4',Georgia,serif;font-size:17px;color:var(--ft-ink);font-weight:600}
+.drop-zone-hint{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ft-ink-faint);margin-top:6px;letter-spacing:.02em}
+.drop-zone-success{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ft-jade);margin-top:8px;display:none}
+/* Collapsible manual input */
+.manual-details{margin-top:24px}
+.manual-details summary{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ft-ink-light);cursor:pointer;padding:12px 0;list-style:none;display:flex;align-items:center;gap:8px;border-top:1px solid var(--ft-rule);border-bottom:1px solid var(--ft-rule);user-select:none}
+.manual-details summary::-webkit-details-marker{display:none}
+.manual-details summary::before{content:'\25B6';font-size:9px;transition:transform .2s;display:inline-block}
+.manual-details[open] summary::before{transform:rotate(90deg)}
+.manual-details summary:hover{color:var(--ft-ink)}
+/* Big copy button */
+.btn-copy-big{display:block;width:100%;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;letter-spacing:.08em;padding:16px 24px;border:none;border-radius:3px;cursor:pointer;transition:all .2s;background:var(--ft-pink);color:var(--ft-white);text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(153,15,61,.15)}
+.btn-copy-big:hover{background:var(--ft-pink-light);box-shadow:0 4px 16px rgba(153,15,61,.25)}
+.btn-copy-big.copied{background:var(--ft-jade)}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:40px}
+.pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ft-ink-faint);padding:4px;line-height:0;display:flex;align-items:center}
+.pw-toggle:hover{color:var(--ft-ink)}
+.pw-toggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<header class="masthead"><div class="container" style="position:relative">
+<h1 class="masthead-title">Hj&#228;rt-MR Referensomvandlare</h1>
+<p class="masthead-sub">&#197;lders- &amp; k&#246;nsspecifika referensv&#228;rden med BSA-indexering</p>
+<p class="masthead-meta"><span id="customTag" class="ws-custom-tag" style="display:none">Anpassade v&#228;rden</span></p>
+<div class="ws-btn-wrap"><button class="ws-link" id="wsBtn" onclick="openWorkspace()">Workspace</button></div>
+</div></header>
+
+<div class="modal-bg" id="loginModal"><div class="modal-box">
+<h2>Workspace</h2><p>Logga in f&#246;r att redigera referensv&#228;rden</p>
+<div class="login-err" id="loginErr">Fel anv&#228;ndarnamn eller l&#246;senord</div>
+<div class="field-group"><label for="loginUser">Anv&#228;ndarnamn</label><input type="text" id="loginUser" autocomplete="off"></div>
+<div class="field-group"><label for="loginPass">L&#246;senord</label><div class="pw-wrap"><input type="password" id="loginPass"><button type="button" class="pw-toggle" id="pwToggle" onclick="togglePw()"><svg viewBox="0 0 24 24" id="eyeIcon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/><line id="eyeSlash" x1="2" y1="2" x2="22" y2="22"/></svg></button></div></div>
+<div style="display:flex;gap:10px;margin-top:20px"><button class="btn btn-primary" onclick="doLogin()">Logga in</button><button class="btn btn-ghost" onclick="closeLogin()">Avbryt</button></div>
+</div></div>
+
+<main class="container">
+<div class="ws-panel" id="wsPanel">
+<hr class="section-rule heavy">
+<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+<div class="section-label" style="margin-bottom:0;border-bottom:none;padding-bottom:0">Workspace &#8212; Redigera referensv&#228;rden</div>
+<button class="btn btn-ghost" onclick="closeWorkspace()" style="padding:6px 16px;font-size:11px">St&#228;ng workspace</button>
+</div>
+<div style="height:12px"></div>
+<div class="ws-tabs" id="wsTabs"></div>
+<div id="wsTableWrap"></div>
+<div class="ws-actions">
+<button class="btn btn-primary" onclick="saveWsValues()">Spara &#228;ndringar</button>
+<button class="btn btn-danger" onclick="resetWsValues()">&#197;terst&#228;ll original</button>
+<span class="ws-msg" id="wsMsg"></span>
+</div>
+</div>
+
+<div class="drop-zone animate-in" id="dropZone" onclick="el('xmlFile').click()">
+<div class="drop-zone-icon">&#128196;</div>
+<div class="drop-zone-text">Importera XML</div>
+<div class="drop-zone-hint">Dra och sl&#228;pp en XML-fil h&#228;r, eller klicka f&#246;r att v&#228;lja fil</div>
+<div class="drop-zone-success" id="dropSuccess"></div>
+<input type="file" id="xmlFile" accept=".xml" style="display:none" onchange="loadXml(this)">
+</div>
+
+<details class="manual-details" id="manualDetails" open>
+<summary>Manuell inmatning &mdash; patientdata &amp; m&#228;tningar</summary>
+
+<div style="height:16px"></div>
+<div class="section-label">Patientdata</div>
+<div class="patient-grid">
+<div class="field-group"><label for="sex">K&#246;n</label><select id="sex" onchange="recalc()"><option value="F">Kvinna</option><option value="M">Man</option></select></div>
+<div class="field-group"><label for="ethnicity">Etnicitet</label><select id="ethnicity" onchange="recalc()"><option value="White">White</option><option value="Black">Black</option><option value="South Asian">South Asian</option><option value="Chinese">Chinese</option><option value="Mixed/Other">Mixed/Other</option></select></div>
+<div class="field-group"><label for="dob">F&#246;delsedatum</label><input type="text" id="dob" placeholder="&#197;&#197;&#197;&#197;MMDD" maxlength="10" oninput="handleDobInput(this)" onblur="handleDobBlur(this)" autocomplete="off" spellcheck="false"><div class="unit-hint">Skriv &#197;&#197;&#197;&#197;MMDD eller &#197;&#197;&#197;&#197;-MM-DD</div></div>
+<div class="field-group"><label for="weight">Vikt</label><input type="number" id="weight" step="0.1" min="1" placeholder="&#8212;" oninput="recalc()"><div class="unit-hint">kg</div></div>
+<div class="field-group"><label for="height">L&#228;ngd</label><input type="number" id="height" step="0.1" min="1" placeholder="&#8212;" oninput="recalc()"><div class="unit-hint">cm</div></div>
+</div>
+
+<hr class="section-rule">
+<div style="display:flex;justify-content:space-between;align-items:baseline">
+<div class="section-label" style="margin-bottom:0;border-bottom:none;padding-bottom:0">M&#228;tningar</div>
+<div style="display:flex;gap:8px"><button class="btn btn-teal" onclick="loadDemo()">Ladda demo</button><button class="btn btn-ghost" onclick="resetMeasurements()">&#197;terst&#228;ll</button></div>
+</div><div style="height:16px"></div>
+
+<div class="measures-grid">
+<div class="measure-panel"><h3>V&#228;nster kammare</h3><div class="chamber-sub">Left Ventricle (LV)</div><div class="measure-fields">
+<div class="field-group"><label for="lvEDV">EDV</label><input type="number" id="lvEDV" step="0.1" placeholder="End-diastolic volume" oninput="recalc()"><div class="unit-hint">ml</div></div>
+<div class="field-group"><label for="lvESV">ESV</label><input type="number" id="lvESV" step="0.1" placeholder="End-systolic volume" oninput="recalc()"><div class="unit-hint">ml</div></div>
+<div class="field-group"><label for="lvMass">LV mass</label><input type="number" id="lvMass" step="0.1" placeholder="Myocardial mass" oninput="recalc()"><div class="unit-hint">g</div></div>
+</div></div>
+<div class="measure-panel"><h3>H&#246;ger kammare</h3><div class="chamber-sub">Right Ventricle (RV)</div><div class="measure-fields">
+<div class="field-group"><label for="rvEDV">EDV</label><input type="number" id="rvEDV" step="0.1" placeholder="End-diastolic volume" oninput="recalc()"><div class="unit-hint">ml</div></div>
+<div class="field-group"><label for="rvESV">ESV</label><input type="number" id="rvESV" step="0.1" placeholder="End-systolic volume" oninput="recalc()"><div class="unit-hint">ml</div></div>
+</div></div></div>
+</details>
+
+<div class="summary-row animate-in delay-1" id="summaryRow" style="display:none">
+<div class="summary-cell"><div class="s-label">&#197;lder</div><div class="s-value" id="sumAge">&#8212;</div><div class="s-unit">&#229;r</div></div>
+<div class="summary-cell"><div class="s-label">BSA (Mosteller)</div><div class="s-value" id="sumBSA">&#8212;</div><div class="s-unit">m&#178;</div><div class="unit-hint" style="margin-top:4px;text-align:center">&#8730;(vikt &#215; l&#228;ngd / 3600)</div></div>
+<div class="summary-cell"><div class="s-label">&#197;ldersgrupp</div><div class="s-value" id="sumGroup">&#8212;</div><div class="s-unit">&#229;r</div></div>
+<div class="summary-cell"><div class="s-label">K&#246;n</div><div class="s-value" id="sumSex">&#8212;</div><div class="s-unit"> </div></div>
+<div class="summary-cell"><div class="s-label">Etnicitet</div><div class="s-value" id="sumEth">&#8212;</div><div class="s-unit"> </div></div>
+</div>
+
+<div id="resultsSection" style="display:none">
+<hr class="section-rule heavy">
+<button class="btn-copy-big" id="copyBtn" onclick="copyReport()">Kopiera rapport till urklipp</button>
+<div style="height:16px"></div>
+<div class="section-label">F&#246;rhandsgranskning av rapport</div>
+<div class="report-box"><pre class="report-pre" id="reportPre" contenteditable="true" spellcheck="false"></pre></div>
+<hr class="section-rule">
+<div style="display:flex;justify-content:space-between;align-items:baseline">
+<div class="section-label" style="margin-bottom:0;border-bottom:none;padding-bottom:0">Resultat &amp; referensj&#228;mf&#246;relse</div>
+</div><div style="height:16px"></div>
+<div class="results-columns" id="resultsColumns"></div>
+</div>
+
+<div id="refSection" style="display:none"><hr class="section-rule heavy">
+<div class="section-label" id="refTitle">Referensv&#228;rden</div>
+<div class="ref-grid" id="refGrid"></div></div>
+
+<footer class="footer">Enbart f&#246;r kliniskt beslutst&#246;d &#8212; verifiera alltid mot lokala riktlinjer<br>Utvecklat av Caroline Berntsson och Netha Hussain<br>Kontakta Netha Hussain netha.hussain@vgregion.se vid eventuella fel i koden<br><br>Referensv&#228;rden fr&#229;n: Raisi-Estabragh Z, et al. Cardiovascular Magnetic Resonance Reference Ranges From the Healthy Hearts Consortium. <em>JACC Cardiovasc Imaging</em>. 2024. <a href="https://www.jacc.org/doi/epdf/10.1016/j.jcmg.2024.01.009" target="_blank" rel="noopener" style="color:var(--ft-teal)">doi:10.1016/j.jcmg.2024.01.009</a><br>Licens: <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener" style="color:var(--ft-teal)">CC0 1.0</a></footer>
+</main>
+
+<script>
+/*
+ * Reference ranges from Raisi-Estabragh et al. (2024)
+ *
+ * Indexed values (suffix "i") are BSA-indexed, i.e. value divided by BSA:
+ *   EDVi  = EDV / BSA   (ml/m²)   — End-Diastolic Volume Index
+ *   ESVi  = ESV / BSA   (ml/m²)   — End-Systolic Volume Index
+ *   SVi   = SV  / BSA   (ml/m²)   — Stroke Volume Index
+ *   LVMi  = LV mass / BSA (g/m²)  — Left Ventricular Mass Index
+ *   EF    = (SV / EDV) × 100 (%)  — Ejection Fraction (not BSA-indexed)
+ *
+ * BSA is calculated using the Mosteller formula: sqrt((weight_kg × height_cm) / 3600)
+ */
+var DEFAULT_REFS={
+"White":{"F":{"LV":{"18-29":{"EDVi":[60,102],"ESVi":[20,44],"SVi":[34,64],"EF":[49,72],"LVMi":[32,52]},"30-39":{"EDVi":[57,99],"ESVi":[19,42],"SVi":[33,62],"EF":[49,72],"LVMi":[32,52]},"40-49":{"EDVi":[54,96],"ESVi":[17,41],"SVi":[32,61],"EF":[50,73],"LVMi":[32,51]},"50-59":{"EDVi":[51,93],"ESVi":[15,39],"SVi":[30,59],"EF":[51,74],"LVMi":[31,51]},"60-69":{"EDVi":[48,90],"ESVi":[14,38],"SVi":[29,58],"EF":[51,74],"LVMi":[31,51]},"70+":{"EDVi":[46,87],"ESVi":[12,36],"SVi":[27,57],"EF":[52,75],"LVMi":[31,50]}},"RV":{"18-29":{"EDVi":[60,104],"ESVi":[21,46],"SVi":[33,65],"EF":[47,71]},"30-39":{"EDVi":[57,102],"ESVi":[19,44],"SVi":[32,64],"EF":[48,72]},"40-49":{"EDVi":[54,99],"ESVi":[17,43],"SVi":[31,63],"EF":[49,73]},"50-59":{"EDVi":[51,96],"ESVi":[15,41],"SVi":[30,62],"EF":[50,74]},"60-69":{"EDVi":[48,93],"ESVi":[14,39],"SVi":[29,61],"EF":[51,75]},"70+":{"EDVi":[46,91],"ESVi":[12,37],"SVi":[28,60],"EF":[52,76]}}},"M":{"LV":{"18-29":{"EDVi":[65,119],"ESVi":[22,54],"SVi":[36,72],"EF":[46,71],"LVMi":[42,69]},"30-39":{"EDVi":[61,116],"ESVi":[21,52],"SVi":[34,70],"EF":[46,71],"LVMi":[41,68]},"40-49":{"EDVi":[58,112],"ESVi":[19,50],"SVi":[32,68],"EF":[47,72],"LVMi":[40,67]},"50-59":{"EDVi":[54,109],"ESVi":[18,49],"SVi":[31,66],"EF":[47,72],"LVMi":[39,66]},"60-69":{"EDVi":[51,106],"ESVi":[16,47],"SVi":[29,64],"EF":[47,72],"LVMi":[38,65]},"70+":{"EDVi":[48,102],"ESVi":[14,46],"SVi":[27,63],"EF":[48,73],"LVMi":[37,64]}},"RV":{"18-29":{"EDVi":[70,128],"ESVi":[26,60],"SVi":[36,76],"EF":[43,69]},"30-39":{"EDVi":[66,124],"ESVi":[24,58],"SVi":[34,74],"EF":[44,70]},"40-49":{"EDVi":[62,120],"ESVi":[22,56],"SVi":[32,72],"EF":[45,71]},"50-59":{"EDVi":[58,116],"ESVi":[20,53],"SVi":[31,71],"EF":[45,71]},"60-69":{"EDVi":[54,112],"ESVi":[17,51],"SVi":[29,69],"EF":[46,72]},"70+":{"EDVi":[50,108],"ESVi":[15,49],"SVi":[27,67],"EF":[46,72]}}}},
+"Black":{"F":{"LV":{"40-49":{"EDVi":[55,96],"ESVi":[18,42],"SVi":[31,60],"EF":[48,72],"LVMi":[31,54]},"50-59":{"EDVi":[52,93],"ESVi":[17,40],"SVi":[29,58],"EF":[49,72],"LVMi":[32,55]},"60-69":{"EDVi":[49,89],"ESVi":[15,38],"SVi":[28,56],"EF":[50,73],"LVMi":[33,56]},"70+":{"EDVi":[45,86],"ESVi":[13,37],"SVi":[26,55],"EF":[50,74],"LVMi":[34,57]}},"RV":{"40-49":{"EDVi":[54,101],"ESVi":[17,44],"SVi":[32,62],"EF":[49,73]},"50-59":{"EDVi":[52,98],"ESVi":[16,42],"SVi":[31,61],"EF":[50,73]},"60-69":{"EDVi":[49,96],"ESVi":[15,41],"SVi":[30,60],"EF":[50,73]},"70+":{"EDVi":[47,94],"ESVi":[14,40],"SVi":[28,59],"EF":[50,74]}}},"M":{"LV":{"50-59":{"EDVi":[53,108],"ESVi":[16,50],"SVi":[31,63],"EF":[46,72],"LVMi":[39,69]},"60-69":{"EDVi":[50,105],"ESVi":[14,48],"SVi":[29,62],"EF":[47,73],"LVMi":[38,68]},"70+":{"EDVi":[47,103],"ESVi":[13,47],"SVi":[28,61],"EF":[47,73],"LVMi":[37,67]}},"RV":{"50-59":{"EDVi":[58,111],"ESVi":[21,51],"SVi":[31,68],"EF":[46,69]},"60-69":{"EDVi":[57,109],"ESVi":[19,49],"SVi":[31,67],"EF":[48,71]},"70+":{"EDVi":[54,108],"ESVi":[17,47],"SVi":[30,67],"EF":[49,73]}}}},
+"South Asian":{"F":{"LV":{"40-49":{"EDVi":[50,84],"ESVi":[15,34],"SVi":[30,55],"EF":[52,74],"LVMi":[28,47]},"50-59":{"EDVi":[48,82],"ESVi":[14,33],"SVi":[29,54],"EF":[53,75],"LVMi":[29,47]},"60-69":{"EDVi":[46,80],"ESVi":[13,32],"SVi":[28,53],"EF":[53,76],"LVMi":[29,47]},"70+":{"EDVi":[44,78],"ESVi":[12,31],"SVi":[27,52],"EF":[54,76],"LVMi":[29,48]}},"RV":{"40-49":{"EDVi":[45,84],"ESVi":[14,35],"SVi":[27,53],"EF":[52,72]},"50-59":{"EDVi":[46,85],"ESVi":[14,34],"SVi":[28,54],"EF":[53,73]},"60-69":{"EDVi":[46,85],"ESVi":[14,34],"SVi":[28,55],"EF":[53,74]},"70+":{"EDVi":[46,85],"ESVi":[13,33],"SVi":[29,55],"EF":[54,74]}}},"M":{"LV":{"40-49":{"EDVi":[52,97],"ESVi":[17,42],"SVi":[30,60],"EF":[49,71],"LVMi":[34,60]},"50-59":{"EDVi":[50,95],"ESVi":[16,41],"SVi":[29,59],"EF":[50,72],"LVMi":[34,59]},"60-69":{"EDVi":[48,92],"ESVi":[14,39],"SVi":[28,58],"EF":[51,73],"LVMi":[33,59]},"70+":{"EDVi":[46,90],"ESVi":[13,38],"SVi":[27,57],"EF":[51,74],"LVMi":[33,58]}},"RV":{"40-49":{"EDVi":[54,102],"ESVi":[20,46],"SVi":[30,61],"EF":[47,69]},"50-59":{"EDVi":[53,100],"ESVi":[18,45],"SVi":[29,60],"EF":[48,70]},"60-69":{"EDVi":[51,98],"ESVi":[17,43],"SVi":[29,60],"EF":[49,70]},"70+":{"EDVi":[49,96],"ESVi":[16,42],"SVi":[28,59],"EF":[49,71]}}}},
+"Chinese":{"F":{"LV":{"18-29":{"EDVi":[59,94],"ESVi":[18,39],"SVi":[34,62],"EF":[52,73],"LVMi":[28,47]},"30-39":{"EDVi":[56,91],"ESVi":[17,38],"SVi":[33,61],"EF":[52,74],"LVMi":[29,47]},"40-49":{"EDVi":[54,89],"ESVi":[15,36],"SVi":[32,60],"EF":[53,75],"LVMi":[30,48]},"50-59":{"EDVi":[52,87],"ESVi":[14,35],"SVi":[31,59],"EF":[54,76],"LVMi":[31,49]},"60-69":{"EDVi":[49,84],"ESVi":[13,34],"SVi":[30,58],"EF":[55,77],"LVMi":[32,50]},"70+":{"EDVi":[47,82],"ESVi":[11,32],"SVi":[29,57],"EF":[56,77],"LVMi":[32,51]}},"RV":{"18-29":{"EDVi":[58,100],"ESVi":[20,46],"SVi":[32,60],"EF":[47,70]},"30-39":{"EDVi":[55,97],"ESVi":[18,43],"SVi":[31,59],"EF":[48,71]},"40-49":{"EDVi":[52,94],"ESVi":[16,41],"SVi":[31,59],"EF":[50,72]},"50-59":{"EDVi":[49,91],"ESVi":[14,39],"SVi":[30,58],"EF":[51,74]},"60-69":{"EDVi":[47,89],"ESVi":[12,37],"SVi":[29,57],"EF":[53,75]},"70+":{"EDVi":[44,86],"ESVi":[10,35],"SVi":[29,57],"EF":[54,77]}}},"M":{"LV":{"18-29":{"EDVi":[63,105],"ESVi":[22,48],"SVi":[36,63],"EF":[45,72],"LVMi":[38,62]},"30-39":{"EDVi":[60,102],"ESVi":[20,46],"SVi":[34,61],"EF":[46,73],"LVMi":[38,61]},"40-49":{"EDVi":[57,99],"ESVi":[19,44],"SVi":[33,60],"EF":[47,73],"LVMi":[37,61]},"50-59":{"EDVi":[54,96],"ESVi":[17,43],"SVi":[32,59],"EF":[47,74],"LVMi":[37,60]},"60-69":{"EDVi":[51,93],"ESVi":[15,41],"SVi":[30,57],"EF":[48,74],"LVMi":[36,60]}},"RV":{"18-29":{"EDVi":[68,118],"ESVi":[27,60],"SVi":[33,66],"EF":[39,67]},"30-39":{"EDVi":[64,114],"ESVi":[24,57],"SVi":[32,64],"EF":[41,68]},"40-49":{"EDVi":[60,110],"ESVi":[22,55],"SVi":[31,63],"EF":[42,69]},"50-59":{"EDVi":[57,106],"ESVi":[19,52],"SVi":[30,62],"EF":[43,71]},"60-69":{"EDVi":[53,102],"ESVi":[16,49],"SVi":[29,61],"EF":[44,72]}}}},
+"Mixed/Other":{"F":{"LV":{"50-59":{"EDVi":[51,92],"ESVi":[15,37],"SVi":[31,60],"EF":[53,74],"LVMi":[29,52]},"60-69":{"EDVi":[47,89],"ESVi":[14,36],"SVi":[29,58],"EF":[52,74],"LVMi":[29,52]},"70+":{"EDVi":[44,85],"ESVi":[13,35],"SVi":[26,56],"EF":[52,74],"LVMi":[29,52]}},"RV":{"50-59":{"EDVi":[51,96],"ESVi":[16,39],"SVi":[30,61],"EF":[53,72]},"60-69":{"EDVi":[48,93],"ESVi":[15,37],"SVi":[29,59],"EF":[53,72]},"70+":{"EDVi":[45,90],"ESVi":[13,36],"SVi":[27,58],"EF":[53,73]}}},"M":{"LV":{"50-59":{"EDVi":[58,107],"ESVi":[18,47],"SVi":[34,65],"EF":[49,72],"LVMi":[38,67]},"60-69":{"EDVi":[52,100],"ESVi":[16,45],"SVi":[30,62],"EF":[49,72],"LVMi":[37,65]},"70+":{"EDVi":[45,94],"ESVi":[14,43],"SVi":[27,59],"EF":[49,72],"LVMi":[35,64]}},"RV":{"50-59":{"EDVi":[59,117],"ESVi":[21,50],"SVi":[33,71],"EF":[50,69]},"60-69":{"EDVi":[53,111],"ESVi":[19,49],"SVi":[30,67],"EF":[49,69]},"70+":{"EDVi":[47,105],"ESVi":[17,47],"SVi":[26,64],"EF":[48,68]}}}}};
+var REFS=JSON.parse(JSON.stringify(DEFAULT_REFS));
+try{var sv=localStorage.getItem('cardiac_mri_custom_refs');if(sv){REFS=JSON.parse(sv);document.getElementById('customTag').style.display='';}}catch(e){}
+var ETHNICITIES=["White","Black","South Asian","Chinese","Mixed/Other"];
+var AGE_GROUPS=["18-29","30-39","40-49","50-59","60-69","70+"];
+var wsLoggedIn=false,wsCurrentTab="F-LV",wsCurrentEth="White";
+
+function togglePw(){var inp=el('loginPass'),slash=el('eyeSlash');if(inp.type==='password'){inp.type='text';slash.style.display='none';}else{inp.type='password';slash.style.display='';}}
+function openWorkspace(){if(wsLoggedIn){document.getElementById('wsPanel').classList.add('open');window.scrollTo({top:0,behavior:'smooth'});}else{document.getElementById('loginModal').classList.add('open');document.getElementById('loginErr').style.display='none';document.getElementById('loginUser').value='';document.getElementById('loginPass').value='';setTimeout(function(){document.getElementById('loginUser').focus();},100);}}
+function closeLogin(){document.getElementById('loginModal').classList.remove('open');}
+function sha256(s){return crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')});}
+function doLogin(){var u=document.getElementById('loginUser').value,p=document.getElementById('loginPass').value;Promise.all([sha256(u),sha256(p)]).then(function(h){if(h[0]==='a23ca91b409b0b7c8767e755f8db8c3f3e6f6d54b78785e15c1a21d5f29ba83d'&&h[1]==='0dd6963ca334e980f2fca1cdf9fc7716b4ac934004fbeaaf81c03986d7bdd341'){wsLoggedIn=true;document.getElementById('loginModal').classList.remove('open');document.getElementById('wsPanel').classList.add('open');var b=document.getElementById('wsBtn');b.textContent='Workspace (inloggad)';b.style.color='var(--ft-jade)';b.style.borderColor='var(--ft-jade)';buildWsTabs();renderWsTable();window.scrollTo({top:0,behavior:'smooth'});}else{document.getElementById('loginErr').style.display='block';}});}
+function closeWorkspace(){document.getElementById('wsPanel').classList.remove('open');}
+
+function buildWsTabs(){var ethH='<div style="margin-bottom:12px"><label style="display:block;font-family:\'IBM Plex Mono\',monospace;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ft-ink-light);margin-bottom:6px">Etnicitet</label><select id="wsEthSelect" onchange="switchWsEth(this.value)" style="width:100%;box-sizing:border-box;font-family:\'IBM Plex Mono\',monospace;font-size:15px;font-weight:500;padding:10px 14px;border:1px solid var(--ft-rule);border-radius:2px;background:var(--ft-white);color:var(--ft-ink)">';for(var e=0;e<ETHNICITIES.length;e++)ethH+='<option value="'+ETHNICITIES[e]+'"'+(ETHNICITIES[e]===wsCurrentEth?' selected':'')+'>'+ETHNICITIES[e]+'</option>';ethH+='</select></div>';var sx=[{k:'F',l:'Kvinna'},{k:'M',l:'Man'}],ch=[{k:'LV',l:'V\u00e4 kammare'},{k:'RV',l:'H\u00f6 kammare'}],h='';for(var i=0;i<sx.length;i++)for(var j=0;j<ch.length;j++){var id=sx[i].k+'-'+ch[j].k;h+='<button class="ws-tab'+(id===wsCurrentTab?' active':'')+'" onclick="switchWsTab(\''+id+'\')">'+sx[i].l+' / '+ch[j].l+'</button>';}document.getElementById('wsTabs').innerHTML=ethH+h;}
+function switchWsEth(e){saveCurrentTabToRefs();wsCurrentEth=e;buildWsTabs();renderWsTable();}
+function saveCurrentTabToRefs(){var pts=wsCurrentTab.split('-'),sex=pts[0],ch=pts[1];if(!REFS[wsCurrentEth]||!REFS[wsCurrentEth][sex]||!REFS[wsCurrentEth][sex][ch])return;var data=REFS[wsCurrentEth][sex][ch];for(var a=0;a<AGE_GROUPS.length;a++){var ag=AGE_GROUPS[a];if(!data[ag])continue;var params=Object.keys(data[ag]);for(var k=0;k<params.length;k++){var p=params[k],base='ws_'+wsCurrentEth.replace(/[\/ ]/g,'_')+'_'+sex+'_'+ch+'_'+ag+'_'+p.replace(/[\/ ]/g,'_'),loEl=document.getElementById(base+'_lo'),hiEl=document.getElementById(base+'_hi');if(loEl&&hiEl)data[ag][p]=[parseFloat(loEl.value),parseFloat(hiEl.value)];}}}
+function switchWsTab(t){saveCurrentTabToRefs();wsCurrentTab=t;buildWsTabs();renderWsTable();}
+
+function renderWsTable(){var pts=wsCurrentTab.split('-'),sex=pts[0],ch=pts[1];if(!REFS[wsCurrentEth]||!REFS[wsCurrentEth][sex]||!REFS[wsCurrentEth][sex][ch]){document.getElementById('wsTableWrap').innerHTML='<p style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;color:var(--ft-ink-faint);padding:16px">Inga referensv\u00e4rden tillg\u00e4ngliga f\u00f6r denna kombination.</p>';return;}var data=REFS[wsCurrentEth][sex][ch];var params=ch==='LV'?['EDVi','ESVi','SVi','EF','LVMi']:['EDVi','ESVi','SVi','EF'];var h='<table class="ws-table"><thead><tr><th>\u00c5ldersgrupp</th>';for(var i=0;i<params.length;i++)h+='<th colspan="2">'+params[i]+'</th>';h+='</tr><tr><th></th>';for(var i=0;i<params.length;i++)h+='<th style="font-size:8px">Min</th><th style="font-size:8px">Max</th>';h+='</tr></thead><tbody>';for(var a=0;a<AGE_GROUPS.length;a++){var ag=AGE_GROUPS[a];if(!data[ag]){h+='<tr><td>'+ag+' \u00e5r</td><td colspan="'+params.length*2+'" style="text-align:center;color:var(--ft-ink-faint);font-style:italic">Ingen data</td></tr>';continue;}h+='<tr><td>'+ag+' \u00e5r</td>';for(var i=0;i<params.length;i++){var p=params[i],vals=data[ag][p],base='ws_'+wsCurrentEth.replace(/[\/ ]/g,'_')+'_'+sex+'_'+ch+'_'+ag+'_'+p.replace(/[\/ ]/g,'_');if(vals)h+='<td><input type="number" id="'+base+'_lo" value="'+vals[0]+'" step="1"></td><td><input type="number" id="'+base+'_hi" value="'+vals[1]+'" step="1"></td>';else h+='<td colspan="2" style="text-align:center;color:var(--ft-ink-faint)">\u2014</td>';}h+='</tr>';}h+='</tbody></table>';document.getElementById('wsTableWrap').innerHTML=h;}
+
+function saveWsValues(){saveCurrentTabToRefs();try{localStorage.setItem('cardiac_mri_custom_refs',JSON.stringify(REFS));}catch(e){}document.getElementById('customTag').style.display='';var m=document.getElementById('wsMsg');m.textContent='\u2713 Sparade!';m.style.color='var(--ft-jade)';m.style.display='';setTimeout(function(){m.style.display='none';},2500);recalc();}
+
+function resetWsValues(){if(!confirm('\u00c5terst\u00e4ll alla referensv\u00e4rden till originalv\u00e4rden?'))return;REFS=JSON.parse(JSON.stringify(DEFAULT_REFS));try{localStorage.removeItem('cardiac_mri_custom_refs');}catch(e){}document.getElementById('customTag').style.display='none';renderWsTable();var m=document.getElementById('wsMsg');m.textContent='\u2713 Originalv\u00e4rden \u00e5terst\u00e4llda!';m.style.color='var(--ft-mandarin)';m.style.display='';setTimeout(function(){m.style.display='none';},2500);recalc();}
+
+document.getElementById('loginPass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+document.getElementById('loginUser').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+
+function getAgeGroup(a){if(a<18)return null;if(a<=29)return'18-29';if(a<=39)return'30-39';if(a<=49)return'40-49';if(a<=59)return'50-59';if(a<=69)return'60-69';return'70+';}
+function calcBSA(w,h){return Math.sqrt((w*h)/3600);}
+function parseDob(raw){if(!raw)return null;var s=raw.replace(/[-\/\s]/g,'');if(s.length!==8||!/^\d{8}$/.test(s))return null;var y=parseInt(s.slice(0,4)),m=parseInt(s.slice(4,6)),d=parseInt(s.slice(6,8));if(y<1900||y>2100||m<1||m>12||d<1||d>31)return null;var dt=new Date(y,m-1,d);if(dt.getFullYear()!==y||dt.getMonth()!==m-1||dt.getDate()!==d)return null;return dt;}
+function handleDobInput(input){var v=input.value.replace(/[^0-9\-]/g,''),digits=v.replace(/-/g,'');if(digits.length>=5&&v.indexOf('-')===-1)v=digits.slice(0,4)+'-'+digits.slice(4);if(digits.length>=7&&(v.match(/-/g)||[]).length<2){var p=v.split('-');if(p.length===2&&p[1].length>2)v=p[0]+'-'+p[1].slice(0,2)+'-'+p[1].slice(2);}if(v.length>10)v=v.slice(0,10);input.value=v;var d=parseDob(v);if(d){input.style.borderColor='';input.style.color='var(--ft-ink)';}else if(v.replace(/-/g,'').length===8){input.style.borderColor='var(--ft-crimson)';input.style.color='var(--ft-crimson)';}else{input.style.borderColor='';input.style.color='var(--ft-ink)';}recalc();}
+function handleDobBlur(input){var d=parseDob(input.value);if(d){var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');input.value=y+'-'+m+'-'+dd;input.style.borderColor='';input.style.color='var(--ft-ink)';}recalc();}
+function calcAge(s){var b=parseDob(s);if(!b)return null;var t=new Date(),a=t.getFullYear()-b.getFullYear(),m=t.getMonth()-b.getMonth();if(m<0||(m===0&&t.getDate()<b.getDate()))a--;return a;}
+function status(v,r){if(!r||v==null||isNaN(v))return'unknown';if(v<r[0])return'low';if(v>r[1])return'high';return'normal';}
+function pct(v,r){if(!r||v==null||isNaN(v))return 50;var sp=r[1]-r[0],pad=sp*.35,mn=r[0]-pad,mx=r[1]+pad;return Math.max(0,Math.min(100,((v-mn)/(mx-mn))*100));}
+function fmt(v){return(v!=null&&!isNaN(v))?v.toFixed(1):'\u2014';}
+function el(id){return document.getElementById(id);}
+function val(id){var v=parseFloat(el(id).value);return isNaN(v)?NaN:v;}
+
+function recalc(){var sex=el('sex').value,eth=el('ethnicity').value,dob=el('dob').value,w=val('weight'),h=val('height'),age=calcAge(dob),bsa=(w>0&&h>0)?calcBSA(w,h):null,ag=age!==null?getAgeGroup(age):null;var show=bsa!=null;el('summaryRow').style.display=show?'':'none';if(show){el('sumAge').textContent=age;el('sumBSA').textContent=bsa.toFixed(2);el('sumGroup').textContent=ag||'Ej till\u00e4mpligt';el('sumSex').textContent=sex==='F'?'Kvinna':'Man';el('sumEth').textContent=eth;}
+var lEdv=val('lvEDV'),lEsv=val('lvESV'),lMass=val('lvMass'),rEdv=val('rvEDV'),rEsv=val('rvESV');var lSv=(!isNaN(lEdv)&&!isNaN(lEsv))?lEdv-lEsv:NaN,lEf=(!isNaN(lSv)&&lEdv>0)?(lSv/lEdv)*100:NaN;var rSv=(!isNaN(rEdv)&&!isNaN(rEsv))?rEdv-rEsv:NaN,rEf=(!isNaN(rSv)&&rEdv>0)?(rSv/rEdv)*100:NaN;var idx=function(v){return(bsa&&!isNaN(v))?v/bsa:NaN;};var ethData=REFS[eth];var refLV=(ag&&sex&&ethData&&ethData[sex]&&ethData[sex].LV)?ethData[sex].LV[ag]||null:null;var refRV=(ag&&sex&&ethData&&ethData[sex]&&ethData[sex].RV)?ethData[sex].RV[ag]||null:null;
+var hasInput=!isNaN(lEdv)||!isNaN(lEsv)||!isNaN(lMass)||!isNaN(rEdv)||!isNaN(rEsv);el('resultsSection').style.display=hasInput?'':'none';if(!hasInput){el('refSection').style.display=ag?'':'none';renderRefTable(eth,sex,ag);return;}
+var lvRows=[{label:'EDV',value:lEdv,unit:'ml',range:null},{label:'ESV',value:lEsv,unit:'ml',range:null},{label:'SV',value:lSv,unit:'ml',range:null},{label:'LV mass',value:lMass,unit:'g',range:null},{label:'EDVi',value:idx(lEdv),unit:'ml/m\u00b2',range:refLV?refLV['EDVi']:null},{label:'ESVi',value:idx(lEsv),unit:'ml/m\u00b2',range:refLV?refLV['ESVi']:null},{label:'SVi',value:idx(lSv),unit:'ml/m\u00b2',range:refLV?refLV['SVi']:null},{label:'Ejection fraction',value:lEf,unit:'%',range:refLV?refLV['EF']:null},{label:'LVMi',value:idx(lMass),unit:'g/m\u00b2',range:refLV?refLV['LVMi']:null}];
+var rvRows=[{label:'EDV',value:rEdv,unit:'ml',range:null},{label:'ESV',value:rEsv,unit:'ml',range:null},{label:'SV',value:rSv,unit:'ml',range:null},{label:'EDVi',value:idx(rEdv),unit:'ml/m\u00b2',range:refRV?refRV['EDVi']:null},{label:'ESVi',value:idx(rEsv),unit:'ml/m\u00b2',range:refRV?refRV['ESVi']:null},{label:'SVi',value:idx(rSv),unit:'ml/m\u00b2',range:refRV?refRV['SVi']:null},{label:'Ejection fraction',value:rEf,unit:'%',range:refRV?refRV['EF']:null}];
+el('resultsColumns').innerHTML=renderCol('V\u00e4nster kammare',lvRows)+renderCol('H\u00f6ger kammare',rvRows);
+var refStr=function(v,r,u){return (r&&!isNaN(v))?' ('+r[0]+'\u2013'+r[1]+' '+u+')':'';};
+var flag=function(v,r){return (r&&!isNaN(v)&&(v<r[0]||v>r[1]))?'*':'';};
+var lines=['Vikt: '+(!isNaN(w)?w:'\u2014')+', L\u00e4ngd: '+(!isNaN(h)?h:'\u2014')+',  BSA: '+(bsa?bsa.toFixed(2):'\u2014')+' m\u00b2','','Enligt referensv\u00e4rdena fr\u00e5n Estabragh et al. (2024).','','V\u00c4NSTER KAMMARE (Ref):','  EDV:           '+fmt(lEdv)+' ml','  ESV:           '+fmt(lEsv)+' ml','  SV:            '+fmt(lSv)+' ml','  LV mass:       '+fmt(lMass)+' g','  EF:            '+fmt(lEf)+flag(lEf,refLV?refLV['EF']:null)+' %'+refStr(lEf,refLV?refLV['EF']:null,'%'),'  EDVi:          '+fmt(idx(lEdv))+flag(idx(lEdv),refLV?refLV['EDVi']:null)+' ml/m\u00b2'+refStr(idx(lEdv),refLV?refLV['EDVi']:null,'ml/m\u00b2'),'  ESVi:          '+fmt(idx(lEsv))+flag(idx(lEsv),refLV?refLV['ESVi']:null)+' ml/m\u00b2'+refStr(idx(lEsv),refLV?refLV['ESVi']:null,'ml/m\u00b2'),'  SVi:           '+fmt(idx(lSv))+flag(idx(lSv),refLV?refLV['SVi']:null)+' ml/m\u00b2'+refStr(idx(lSv),refLV?refLV['SVi']:null,'ml/m\u00b2'),'  LVMi:          '+fmt(idx(lMass))+flag(idx(lMass),refLV?refLV['LVMi']:null)+' g/m\u00b2'+refStr(idx(lMass),refLV?refLV['LVMi']:null,'g/m\u00b2'),'','H\u00d6GER KAMMARE (Ref):','  EDV:           '+fmt(rEdv)+' ml','  ESV:           '+fmt(rEsv)+' ml','  SV:            '+fmt(rSv)+' ml','  EF:            '+fmt(rEf)+flag(rEf,refRV?refRV['EF']:null)+' %'+refStr(rEf,refRV?refRV['EF']:null,'%'),'  EDVi:          '+fmt(idx(rEdv))+flag(idx(rEdv),refRV?refRV['EDVi']:null)+' ml/m\u00b2'+refStr(idx(rEdv),refRV?refRV['EDVi']:null,'ml/m\u00b2'),'  ESVi:          '+fmt(idx(rEsv))+flag(idx(rEsv),refRV?refRV['ESVi']:null)+' ml/m\u00b2'+refStr(idx(rEsv),refRV?refRV['ESVi']:null,'ml/m\u00b2'),'  SVi:           '+fmt(idx(rSv))+flag(idx(rSv),refRV?refRV['SVi']:null)+' ml/m\u00b2'+refStr(idx(rSv),refRV?refRV['SVi']:null,'ml/m\u00b2')];
+el('reportPre').innerHTML=lines.join('\n');el('refSection').style.display=ag?'':'none';renderRefTable(eth,sex,ag);}
+
+function renderCol(title,rows){var abnormal=0,hasNormal=false;for(var i=0;i<rows.length;i++){var s=status(rows[i].value,rows[i].range);if(s==='high'||s==='low')abnormal++;if(s==='normal')hasNormal=true;}var pillHtml='';if(abnormal>0)pillHtml='<span class="status-pill pill-warn">'+abnormal+' avvikande</span>';else if(hasNormal)pillHtml='<span class="status-pill pill-ok">Alla normala</span>';
+var html='<div class="result-col"><div class="result-col-header"><h3>'+title+'</h3>'+pillHtml+'</div>';for(var i=0;i<rows.length;i++){var r=rows[i],s=status(r.value,r.range),flagClass=s==='high'?' flagged':s==='low'?' flagged-low':'';html+='<div class="result-row'+flagClass+'"><div class="rr-top"><span class="rr-label">'+r.label+'</span><span class="rr-value-group"><span class="rr-value '+s+'">'+fmt(r.value)+'</span><span class="rr-unit">'+r.unit+'</span>';if(s==='high')html+=' <span class="rr-tag tag-high">F\u00f6rh\u00f6jt</span>';else if(s==='low')html+=' <span class="rr-tag tag-low">L\u00e5gt</span>';else if(s==='normal')html+=' <span class="rr-tag tag-normal">Normalt</span>';html+='</span></div>';if(r.range){var sp=r.range[1]-r.range[0],pad=sp*.35,mn=r.range[0]-pad,mx=r.range[1]+pad,total=mx-mn,nStart=((r.range[0]-mn)/total)*100,nEnd=((r.range[1]-mn)/total)*100,pos=pct(r.value,r.range);html+='<div class="gauge"><div class="gauge-track"></div><div class="gauge-normal" style="left:'+nStart+'%;width:'+(nEnd-nStart)+'%"></div><div class="gauge-marker '+s+'" style="left:'+pos+'%"></div></div><div class="rr-ref">Ref: '+r.range[0]+'\u2013'+r.range[1]+' '+r.unit+'</div>';}html+='</div>';}html+='</div>';return html;}
+
+function renderRefTable(eth,sex,ag){if(!ag)return;var ethData=REFS[eth];var lv=ethData&&ethData[sex]&&ethData[sex].LV?ethData[sex].LV[ag]:null,rv=ethData&&ethData[sex]&&ethData[sex].RV?ethData[sex].RV[ag]:null;if(!lv&&!rv){el('refSection').style.display='none';return;}el('refTitle').textContent='Referensv\u00e4rden \u2014 '+eth+', '+(sex==='F'?'Kvinna':'Man')+', '+ag+' \u00e5r';var html='',sets=[['V\u00e4nster kammare',lv],['H\u00f6ger kammare',rv]];for(var i=0;i<sets.length;i++){var title=sets[i][0],data=sets[i][1];if(!data)continue;html+='<div><h3 style="font-family:\'Playfair Display\',Georgia,serif;font-size:16px;font-weight:700;margin-bottom:10px">'+title+'</h3><table class="ref-table"><thead><tr><th>Parameter</th><th>Intervall</th></tr></thead><tbody>';var keys=Object.keys(data);for(var j=0;j<keys.length;j++)html+='<tr><td>'+keys[j]+'</td><td>'+data[keys[j]][0]+'\u2013'+data[keys[j]][1]+'</td></tr>';html+='</tbody></table></div>';}el('refGrid').innerHTML=html;}
+
+function copyReport(){navigator.clipboard.writeText(el('reportPre').innerText).then(function(){var btn=el('copyBtn');btn.textContent='\u2713 Kopierad till urklipp!';btn.classList.add('copied');setTimeout(function(){btn.textContent='Kopiera rapport till urklipp';btn.classList.remove('copied');},2000);}).catch(function(){var btn=el('copyBtn');btn.textContent='Kunde inte kopiera \u2014 markera manuellt';btn.style.background='var(--ft-crimson)';setTimeout(function(){btn.textContent='Kopiera rapport till urklipp';btn.style.background='';},3000);});}
+function loadDemo(){el('sex').value='M';el('ethnicity').value='White';el('dob').value='1984-04-13';el('weight').value='73';el('height').value='180';el('lvEDV').value='181.2';el('lvESV').value='87.4';el('lvMass').value='51.8';el('rvEDV').value='186.3';el('rvESV').value='87.3';recalc();}
+function resetMeasurements(){el('sex').value='F';el('ethnicity').value='White';el('dob').value='';el('weight').value='';el('height').value='';el('lvEDV').value='';el('lvESV').value='';el('lvMass').value='';el('rvEDV').value='';el('rvESV').value='';el('dob').style.borderColor='';el('dob').style.color='var(--ft-ink)';el('dropSuccess').style.display='none';el('manualDetails').setAttribute('open','');recalc();}
+function loadXml(input){if(!input.files||!input.files[0])return;processXmlFile(input.files[0]);input.value='';}
+function processXmlFile(file){var reader=new FileReader();reader.onload=function(e){var parser=new DOMParser(),doc=parser.parseFromString(e.target.result,'text/xml');if(doc.querySelector('parsererror')){var ds=el('dropSuccess');ds.textContent='\u2718 Kunde inte tolka XML-filen';ds.style.color='var(--ft-crimson)';ds.style.display='';return;}el('sex').value='F';el('dob').value='';el('dob').style.borderColor='';el('dob').style.color='var(--ft-ink)';el('weight').value='';el('height').value='';el('lvEDV').value='';el('lvESV').value='';el('lvMass').value='';el('rvEDV').value='';el('rvESV').value='';recalc();var attr=function(path){var n=doc.querySelector(path);return n?n.getAttribute('val'):''};var sex=attr('Report>Patient>Sex');if(sex)el('sex').value=sex;var dob=attr('Report>Patient>BirthDate');if(dob){el('dob').value=dob;handleDobBlur(el('dob'));}var w=attr('Report>Patient>Weight');if(w&&parseFloat(w)>0)el('weight').value=w;var h=attr('Report>Patient>Height');if(h&&parseFloat(h)>0)el('height').value=h;var lv=doc.querySelector('Report>SAX3DFunction>LV');if(lv){var n;n=lv.querySelector('EDV');if(n)el('lvEDV').value=n.getAttribute('val');n=lv.querySelector('ESV');if(n)el('lvESV').value=n.getAttribute('val');n=lv.querySelector('MyoMass_diast');if(n)el('lvMass').value=n.getAttribute('val');}var rv=doc.querySelector('Report>SAX3DFunction>RV');if(rv){var n;n=rv.querySelector('EDV');if(n)el('rvEDV').value=n.getAttribute('val');n=rv.querySelector('ESV');if(n)el('rvESV').value=n.getAttribute('val');}var missing=[];if(!w||parseFloat(w)<=0)missing.push('vikt');if(!h||parseFloat(h)<=0)missing.push('l\u00e4ngd');if(!lv&&!rv)missing.push('m\u00e4tningar (LV/RV)');var ds=el('dropSuccess');if(missing.length>0){ds.innerHTML='\u2713 '+file.name+' importerad \u2014 <span style="color:var(--ft-mandarin)">saknas i XML: '+missing.join(', ')+' (fyll i manuellt)</span>';}else{ds.textContent='\u2713 '+file.name+' importerad';}ds.style.color='';ds.style.display='';recalc();};reader.readAsText(file);}
+/* Drag and drop */
+(function(){var dz=el('dropZone');dz.addEventListener('dragover',function(e){e.preventDefault();e.stopPropagation();dz.classList.add('drag-over');});dz.addEventListener('dragleave',function(){dz.classList.remove('drag-over');});dz.addEventListener('drop',function(e){e.preventDefault();e.stopPropagation();dz.classList.remove('drag-over');var f=e.dataTransfer.files;if(f&&f[0])processXmlFile(f[0]);});})();
+</script>
+</body>
+</html>

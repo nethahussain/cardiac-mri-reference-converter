@@ -1,0 +1,26 @@
+# Patient data — NEVER commit. CMR segmentation exports contain identifiable
+# data (personal ID numbers, study dates, accession numbers, institution names).
+*.xml
+
+# Copyrighted publication material — do not redistribute the publisher's files.
+*.pdf
+appendix*.docx
+raisi-estabragh*
+
+# Original Swedish working documents (superseded by the English docs/)
+Berakningar_Dokumentation.docx
+reference-values.docx
+README.docx
+Ethnicity_Reference_Ranges.docx
+email-table.html
+generate_docx.js
+
+# OS / editor / tooling
+.DS_Store
+.claude/
+*.tmp
+*.log
+
+# Python
+__pycache__/
+*.pyc
